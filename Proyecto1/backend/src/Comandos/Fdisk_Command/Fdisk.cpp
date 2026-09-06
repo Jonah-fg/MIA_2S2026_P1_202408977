@@ -31,7 +31,7 @@ namespace Comandos {
         vector<string> found;
         auto begin =sregex_iterator(atributos.begin(), atributos.end(), lexic);
         auto end =sregex_iterator();
-        for (auto it = begin; it!= end; ++it)
+        for (auto it =begin; it!= end; ++it)
             found.push_back(it->str());
 
         if (found.size()!= tokens.size()) {

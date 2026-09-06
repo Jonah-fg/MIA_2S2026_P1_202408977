@@ -105,7 +105,7 @@ namespace Analyzer {
         else if (tokens[0]=="mounted"){
             // Comando mounted: listar particiones montadas
             if (Global::MountedPartitions.empty()) {
-                msg = "No hay particiones montadas.";
+                msg ="No hay particiones montadas.";
             }
             else {
                 msg ="Particiones montadas:\n";
