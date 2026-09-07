@@ -8,4 +8,6 @@ namespace Global{
     extern unordered_map<string, string> MountedPartitions; // id=  path del disco
 
     bool GetEssentialRep(const string& id, Estructuras::MBR& mbrOut, string& diskPathOut, string& errMsg);
+    //Obtiene la partición montada (struct PARTITION) y el path del disco
+    bool GetMountedPartition(const std::string& id, Estructuras::PARTITION& partOut, std::string& diskPathOut, std::string& errMsg);
 }

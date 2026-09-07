@@ -6,6 +6,7 @@
 #include <iostream>
 #include "../Global/MountedPartitions.h"
 #include "../Comandos/Rmdisk_Command/Rmdisk.h"
+#include "../Comandos/Mkfs_Command/Mkfs.h"
 #include <sstream>
 #include <algorithm>
 #include <cctype>
@@ -114,6 +115,17 @@ namespace Analyzer {
                 }
             }
         } 
+        else if (tokens[0]== "mkfs") {
+            Comandos::CommandResult result= Comandos::Mkfs_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+        
         else{
             hasError= true;
             errorMsg = "Comando no reconocido: " + tokens[0];
