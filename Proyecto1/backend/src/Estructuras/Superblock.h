@@ -1,7 +1,7 @@
 #pragma once
 #include <ctime>
 
-struct Superblock {
+struct Superblock{
     int s_filesystem_type; // 2 para EXT2
     int s_inodes_count;
     int s_blocks_count;

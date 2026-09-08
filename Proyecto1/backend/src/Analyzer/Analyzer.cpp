@@ -10,6 +10,8 @@
 #include <sstream>
 #include <algorithm>
 #include <cctype>
+#include "../Comandos/Login_Command/Login.h"
+#include "../Comandos/Logout_Command/Logout.h"
 
 using namespace std;
 
@@ -125,6 +127,27 @@ namespace Analyzer {
                 errorMsg =result.message;
             }
         }
+        else if (tokens[0]== "login") {
+            Comandos::CommandResult result= Comandos::Login_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+        else if (tokens[0]== "logout") {
+            Comandos::CommandResult result= Comandos::Logout_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError = true;
+                errorMsg =result.message;
+            }
+        }
+        
         
         else{
             hasError= true;

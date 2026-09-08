@@ -2,7 +2,6 @@
 #define SUPERBLOCK_H
 #include <string>
 #include <cstdint>
-
 namespace Estructuras {
 
 #pragma pack(push, 1)
