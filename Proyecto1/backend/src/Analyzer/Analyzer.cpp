@@ -12,6 +12,11 @@
 #include <cctype>
 #include "../Comandos/Login_Command/Login.h"
 #include "../Comandos/Logout_Command/Logout.h"
+#include "../Comandos/Mkgrp_Command/Mkgrp.h"
+#include "../Comandos/Rmgrp_Command/Rmgrp.h"
+#include "../Comandos/Mkusr_Command/Mkusr.h"
+#include "../Comandos/Rmusr_Command/Rmusr.h"
+#include "../Comandos/Chgrp_Command/Chgrp.h"
 
 using namespace std;
 
@@ -147,12 +152,62 @@ namespace Analyzer {
                 errorMsg =result.message;
             }
         }
-        
-        
+        else if (tokens[0]== "mkgrp") {
+            Comandos::CommandResult result= Comandos::Mkgrp_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+        else if (tokens[0]== "rmgrp") {
+            Comandos::CommandResult result= Comandos::Rmgrp_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+        else if (tokens[0]== "mkusr") {
+            Comandos::CommandResult result= Comandos::Mkusr_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+        else if (tokens[0]== "rmusr") {
+            Comandos::CommandResult result= Comandos::Rmusr_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+        else if (tokens[0]=="chgrp"){
+            Comandos::CommandResult result= Comandos::Chgrp_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+
         else{
             hasError= true;
             errorMsg = "Comando no reconocido: " + tokens[0];
         }
+    
         if (hasError){
             cout <<"[ERROR] "<< errorMsg <<endl;
         }
