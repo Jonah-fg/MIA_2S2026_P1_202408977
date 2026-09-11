@@ -1,0 +1,137 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+}
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-header {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.App-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
+
+.App-header p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+.contenedor {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  flex: 1;
+}
+
+.panel {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+.panel h2 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #1e3c72;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 8px;
+}
+
+.area-comandos {
+  flex: 1;
+  width: 100%;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 14px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+  background: #fafafa;
+  line-height: 1.5;
+}
+.area-comandos:focus {
+  outline: none;
+  border-color: #2a5298;
+  box-shadow: 0 0 0 2px rgba(42, 82, 152, 0.2);
+}
+
+.botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+button, .boton-archivo {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+button {
+  background-color: #2a5298;
+  color: white;
+}
+button:hover:not(:disabled) {
+  background-color: #1e3c72;
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.boton-archivo {
+  background-color: #6c757d;
+  color: white;
+}
+
+.boton-archivo:hover {
+  background-color: #5a6268;
+}
+.boton-limpiar {
+  background-color: #dc3545;
+}
+.boton-limpiar:hover {
+  background-color: #c82333;
+}
+
+.area-salida {
+  flex: 1;
+  background: #1e1e1e;
+  color: #4af626;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 13px;
+  padding: 15px;
+  border-radius: 6px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  min-height: 300px;
+  line-height: 1.4;
+}
+@media (max-width: 900px) {
+  .contenedor {
+    grid-template-columns: 1fr;
+  }
+}

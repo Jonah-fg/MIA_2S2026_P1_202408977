@@ -14,5 +14,6 @@ namespace Ext2Utils {
     bool EscribirArchivo(const std::string& diskPath, const Estructuras::SUPERBLOCK& sb, Estructuras::INODE& inode, const std::string& contenido, std::string& errMsg);
     //Asigna un bloque libre 
     int AsignarBloqueLibre(const std::string& diskPath, const Estructuras::SUPERBLOCK& sb, std::string& errMsg);
+    int BuscarInodoLibre(const std::string& diskPath, const Estructuras::SUPERBLOCK& sb, std::string& errMsg);
 } 
 #endif

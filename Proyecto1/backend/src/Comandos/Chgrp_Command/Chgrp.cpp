@@ -148,7 +148,7 @@ namespace Comandos{
         if (!Ext2Utils::EscribirArchivo(diskPath, sb, inodeUsers, nuevoContenido, errMsg)) {
             return {false, "ERROR: No se pudo escribir users.txt: " + errMsg};
         }
-        return {true, "CHGRP: Usuario '" +usuario+ "' ahora pertenece al grupo '" + nuevoGrupo + "'"};
+        return {true,"CHGRP: Usuario '" +usuario+ "' ahora pertenece al grupo '" + nuevoGrupo + "'"};
     }
 
 } 
