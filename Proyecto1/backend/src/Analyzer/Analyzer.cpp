@@ -15,6 +15,9 @@
 #include "../Comandos/Mkgrp_Command/Mkgrp.h"
 #include "../Comandos/Rmgrp_Command/Rmgrp.h"
 #include "../Comandos/Mkusr_Command/Mkusr.h"
+#include "../Comandos/Mkfile_Command/Mkfile.h"
+#include "../Comandos/Mkdir_Command/Mkdir.h"
+#include "../Comandos/Cat_Command/Cat.h"
 #include "../Comandos/Rmusr_Command/Rmusr.h"
 #include "../Comandos/Chgrp_Command/Chgrp.h"
 
@@ -194,6 +197,36 @@ namespace Analyzer {
         }
         else if (tokens[0]=="chgrp"){
             Comandos::CommandResult result= Comandos::Chgrp_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+        else if (tokens[0]=="mkfile"){
+            Comandos::CommandResult result= Comandos::Mkfile_Command(params);
+            if (result.success){
+                msg = result.message;
+            }
+            else{
+                hasError = true;
+                errorMsg =result.message;
+            }
+        }
+        else if (tokens[0] =="mkdir"){
+            Comandos::CommandResult result= Comandos::Mkdir_Command(params);
+            if (result.success) {
+                msg =result.message;
+            }
+            else{
+                hasError= true;
+                errorMsg =result.message;
+            }
+        }
+        else if (tokens[0] =="cat"){
+            Comandos::CommandResult result= Comandos::Cat_Command(params);
             if (result.success) {
                 msg =result.message;
             }

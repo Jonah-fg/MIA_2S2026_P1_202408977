@@ -3,7 +3,7 @@
 using namespace std;
 namespace Comandos{
 
-    CommandResult Logout_Command(const vector<string>& tokens) {
+    CommandResult Logout_Command(const vector<string>& /*tokens*/) {
         if (!Global::sesionActual.activa){
             return {false, "ERROR: No hay sesión activa"};
         }

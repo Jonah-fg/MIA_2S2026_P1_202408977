@@ -67,7 +67,7 @@ namespace Comandos{
                 if (value.empty())
                     return {false, "ERROR: usuario vacío"};
 
-                usuario = value;
+                usuario= value;
             }
             else if (key == "-grp") {
                 if (value.empty()) {
@@ -145,7 +145,7 @@ namespace Comandos{
         inodeUsers.I_size= nuevoContenido.size();
         inodeUsers.I_mtime =static_cast<float>(time(nullptr));
 
-        if (!Ext2Utils::EscribirArchivo(diskPath, sb, inodeUsers, nuevoContenido, errMsg)) {
+        if (!Ext2Utils::EscribirArchivo(diskPath, sb, 1, inodeUsers, nuevoContenido, errMsg)) {
             return {false, "ERROR: No se pudo escribir users.txt: " + errMsg};
         }
         return {true,"CHGRP: Usuario '" +usuario+ "' ahora pertenece al grupo '" + nuevoGrupo + "'"};

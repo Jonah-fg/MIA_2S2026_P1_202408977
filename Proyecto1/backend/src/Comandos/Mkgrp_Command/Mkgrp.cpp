@@ -132,7 +132,7 @@ namespace Comandos{
         inodeUsers.I_size= nuevoContenido.size();
         inodeUsers.I_mtime = static_cast<float>(time(nullptr));
 
-        if (!Ext2Utils::EscribirArchivo(diskPath, sb, inodeUsers, nuevoContenido, errMsg)) {
+        if (!Ext2Utils::EscribirArchivo(diskPath, sb, 1, inodeUsers, nuevoContenido, errMsg)) {
             return {false, "ERROR: No se pudo esribir users.txt: " + errMsg};
         }
 

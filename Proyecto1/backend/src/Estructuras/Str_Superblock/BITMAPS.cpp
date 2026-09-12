@@ -4,7 +4,6 @@
 using namespace std;
 
 namespace Estructuras{
-
     bool SUPERBLOCK::Create_Bit_Maps(const string& path, string& errMsg) {
         fstream file(path, ios::binary | ios::in | ios::out);
         if (!file.is_open()) {
@@ -12,18 +11,21 @@ namespace Estructuras{
             return false;
         }
 
+        const int totalInodos = Sb_inodes_count + Sb_free_inodes_count;
+        const int totalBloques = Sb_blocks_count + Sb_free_blocks_count;
+
         //Bitmap de inodos
         file.seekp(Sb_bm_inode_start, ios::beg);
-        vector<char> inodeBitmap(static_cast<size_t>(Sb_free_inodes_count), '0');
+        vector<char> inodeBitmap(static_cast<size_t>(totalInodos), '0');
         file.write(inodeBitmap.data(), static_cast<streamsize>(inodeBitmap.size()));
         if (!file){
             errMsg ="ERROR: No se pudo escribir el bitmap de inodos";
             return false;
         }
 
-        //Bitmap de bloquess
+        //Bitmap de bloques
         file.seekp(Sb_bm_block_start, ios::beg);
-        vector<char> blockBitmap(static_cast<size_t>(Sb_free_blocks_count), '0');
+        vector<char> blockBitmap(static_cast<size_t>(totalBloques), '0');
         file.write(blockBitmap.data(), static_cast<streamsize>(blockBitmap.size()));
         if(!file){
             errMsg ="ERROR: No se pudo escribir el bitmap de bloques";

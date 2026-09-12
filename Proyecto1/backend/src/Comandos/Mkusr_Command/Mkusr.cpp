@@ -18,7 +18,7 @@ namespace Comandos{
         string result;
         for (size_t i =0; i <tokens.size(); ++i) {
             if (i >0) 
-            result += " "
+                result += " "
             ;
             result += tokens[i];
         }
@@ -158,7 +158,7 @@ namespace Comandos{
         inodeUsers.I_size =nuevoContenido.size();
         inodeUsers.I_mtime = static_cast<float>(time(nullptr));
 
-        if (!Ext2Utils::EscribirArchivo(diskPath, sb, inodeUsers, nuevoContenido, errMsg)) {
+        if (!Ext2Utils::EscribirArchivo(diskPath, sb, 1, inodeUsers, nuevoContenido, errMsg)) {
             return {false, "ERROR: No se pudo escribir users.txt: " + errMsg};
         }
         return {true, "MKUSR: Usuario '" + usuario + "' creado con UID " + to_string(nuevoUID)};

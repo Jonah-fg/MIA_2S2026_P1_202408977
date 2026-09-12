@@ -8,18 +8,9 @@
 using namespace std;
 
 namespace Server {
-    //Redireccion cout a un stringstream para capturar la salida de Analyzer
-    static string ejecutarComando(const string& comando) {
-        stringstream buffer;
-        streambuf* oldCout = cout.rdbuf(buffer.rdbuf());
-        Analyzer::Analyze(vector<string>{comando});
-        cout.rdbuf(oldCout);
-        return buffer.str();
-    }
-
     static string ejecutarScript(const string& script) {
         stringstream buffer;
-        streambuf* oldCout = cout.rdbuf(buffer.rdbuf());
+        streambuf* oldCout= cout.rdbuf(buffer.rdbuf());
 
         istringstream stream(script);
         string linea;

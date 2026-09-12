@@ -59,9 +59,9 @@ namespace Ext2Utils{
     }
 
     int AsignarBloqueLibre(const string& diskPath, const Estructuras::SUPERBLOCK& sb, string& errMsg) {
-        // Leer el bitmap de bloques (arreglo de char '0' y '1')
-        int bmSize = sb.Sb_free_blocks_count;
-        vector<char> bitmap(bmSize);
+        // El bitmap debe cubrir el total de bloques del sistema, no solo la cantidad de libres.
+        int bmSize = sb.Sb_blocks_count+ sb.Sb_free_blocks_count;
+        vector<char> bitmap(static_cast<size_t>(bmSize), '0');
         ifstream file(diskPath, ios::binary);
         if (!file.is_open()) {
             errMsg = "No se pudo abrir el disco para leer bitmap de bloques";
@@ -75,12 +75,9 @@ namespace Ext2Utils{
         }
         file.close();
 
-        // Buscar el primer byte con '0'
         for (int i = 0; i < bmSize; ++i) {
             if (bitmap[i] == '0') {
-                // Marcarlo como '1'
                 bitmap[i] = '1';
-                // Escribir de vuelta
                 fstream outFile(diskPath, ios::binary | ios::in | ios::out);
                 if (!outFile.is_open()) {
                     errMsg = "No se pudo abrir el disco para escribir bitmap";
@@ -93,27 +90,26 @@ namespace Ext2Utils{
                     return -1;
                 }
                 outFile.close();
-                return i; // número de bloque
+                return i;
             }
         }
         errMsg = "No hay bloques libres";
         return -1;
     }
 
-    bool EscribirArchivo(const string& diskPath, const Estructuras::SUPERBLOCK& sb, Estructuras::INODE& inode, const string& contenido, string& errMsg) {
-        int totalBytes = contenido.size();
-        int blockSize = sb.Sb_block_size; // 64
-        int numBloquesNecesarios = (totalBytes + blockSize - 1) / blockSize;
+    bool EscribirArchivo(const string& diskPath, const Estructuras::SUPERBLOCK& sb, int inodoNum, Estructuras::INODE& inode, const string& contenido, string& errMsg) {
+        int totalBytes =contenido.size();
+        int blockSize=sb.Sb_block_size; //64
+        int numBloquesNecesarios =(totalBytes + blockSize - 1) / blockSize;
 
-        // Verificar que no exceda los 12 bloques directos
-        if (numBloquesNecesarios > 12) {
+        //Verificacion que no exceda los 12 bloques directos
+        if (numBloquesNecesarios >12){
             errMsg = "Archivo demasiado grande (máx 12 bloques = " + to_string(12 * blockSize) + " bytes)";
             return false;
         }
-
         // Asegurar que el inodo tenga suficientes bloques asignados
-        for (int i = 0; i < numBloquesNecesarios; ++i) {
-            if (inode.I_block[i]== -1) {
+        for (int i = 0; i<numBloquesNecesarios; ++i) {
+            if (inode.I_block[i]== -1 || inode.I_block[i] == 0) {
                 int nuevoBloque =AsignarBloqueLibre(diskPath, sb, errMsg);
                 if (nuevoBloque ==-1) {
                     return false;
@@ -124,11 +120,11 @@ namespace Ext2Utils{
 
         // Escribir el contenido en los bloques
         int bytesEscritos = 0;
-        for (int i = 0; i < numBloquesNecesarios; ++i) {
+        for (int i = 0; i< numBloquesNecesarios; ++i) {
             int blockNum = inode.I_block[i];
             long long blockOffset = sb.Sb_block_start + (blockNum * blockSize);
-            int bytesRestantes = totalBytes - bytesEscritos;
-            int bytesEnEsteBloque = (bytesRestantes > blockSize) ? blockSize : bytesRestantes;
+            int bytesRestantes =totalBytes - bytesEscritos;
+            int bytesEnEsteBloque=(bytesRestantes > blockSize) ? blockSize : bytesRestantes;
 
             Estructuras::FILEBLOCK fileBlock;
             memset(&fileBlock, 0, sizeof(fileBlock));
@@ -139,12 +135,11 @@ namespace Ext2Utils{
             bytesEscritos += bytesEnEsteBloque;
         }
 
-        // Actualizar inodo
+        // Actualizar inodo del archivo correcto
         inode.I_size = totalBytes;
         inode.I_mtime = static_cast<float>(time(nullptr));
 
-        // Escribir inodo actualizado (asumimos que es el inodo 1, pero puedes pasarlo como parámetro)
-        if (!EscribirInodo(diskPath, sb, 1, inode, errMsg)) {
+        if(!EscribirInodo(diskPath, sb, inodoNum, inode, errMsg)) {
             return false;
         }
 
@@ -153,39 +148,81 @@ namespace Ext2Utils{
     }
     
     int BuscarInodoLibre(const string& diskPath, const Estructuras::SUPERBLOCK& sb, string& errMsg) {
-        // Leer la tabla de inodos completa (todos los inodos)
-        int numInodos = sb.Sb_inodes_count;
-        vector<Estructuras::INODE> inodos(numInodos);
+        // El bitmap y la tabla de inodos deben abarcar el total de inodos del sistema.
+        int totalInodos = sb.Sb_inodes_count + sb.Sb_free_inodes_count;
+        vector<Estructuras::INODE> inodos(static_cast<size_t>(totalInodos));
         ifstream file(diskPath, ios::binary);
         if (!file.is_open()) {
             errMsg = "No se pudo abrir el disco para leer tabla de inodos";
             return -1;
         }
         file.seekg(sb.Sb_inode_start, ios::beg);
-        file.read(reinterpret_cast<char*>(inodos.data()), numInodos * sizeof(Estructuras::INODE));
+        file.read(reinterpret_cast<char*>(inodos.data()), totalInodos * sizeof(Estructuras::INODE));
         if (!file) {
             errMsg = "Error al leer tabla de inodos";
             return -1;
         }
         file.close();
 
-        // Buscar el primer inodo que esté libre (I_type[0] == 0 y I_size == 0)
-        for (int i = 0; i < numInodos; ++i) {
-            if (inodos[i].I_type[0] == 0 && inodos[i].I_size == 0) {
-                // También verificar que no tenga bloques asignados (opcional)
-                bool tieneBloque = false;
+        for (int i = 0; i < totalInodos; ++i) {
+            const Estructuras::INODE& inode = inodos[i];
+
+            // Un inode libre debe estar totalmente en cero y sin bloques reales asignados.
+            // Importante: los inodos recién creados se inicializan con 0 en I_block[], no con -1.
+            if (inode.I_type[0] == '\0' && inode.I_size == 0) {
+                bool tieneBloqueReal = false;
                 for (int j = 0; j < 15; ++j) {
-                    if (inodos[i].I_block[j] != -1) {
-                        tieneBloque = true;
+                    if (inode.I_block[j] != 0 && inode.I_block[j] != -1) {
+                        tieneBloqueReal = true;
                         break;
                     }
                 }
-                if(!tieneBloque) {
+                if (!tieneBloqueReal) {
                     return i;
                 }
             }
         }
-        errMsg="No hay inodos libres";
+        errMsg = "No hay inodos libres";
         return -1;
+    }
+
+    bool MarcarInodoUsado(const string& diskPath, const Estructuras::SUPERBLOCK& sb, int inodoNum, string& errMsg) {
+        fstream file(diskPath, ios::binary | ios::in | ios::out);
+        if(!file.is_open()) {
+            errMsg= "No se pudo abrir el disco para marcar inodo usado";
+            return false;
+        }
+        long long pos = sb.Sb_bm_inode_start+inodoNum;
+        file.seekp(pos, ios::beg);
+        char bit ='1';
+        file.write(&bit, 1);
+        if (!file){
+            errMsg = "Error al escribir en el bitmap de inodos";
+            file.close();
+            return false;
+        }
+        file.close();
+        errMsg.clear();
+        return true;
+    }
+
+    bool MarcarBloqueUsado(const string& diskPath, const Estructuras::SUPERBLOCK& sb,int bloqueNum, string& errMsg) {
+        fstream file(diskPath, ios::binary | ios::in | ios::out);
+        if (!file.is_open()){
+            errMsg="No se pudo abrir el disco para marar bloque usado";
+            return false;
+        }
+        long long pos =sb.Sb_bm_block_start + bloqueNum;
+        file.seekp(pos, ios::beg);
+        char bit ='1';
+        file.write(&bit, 1);
+        if (!file){
+            errMsg= "Error al escribir en el bitmap de bloques";
+            file.close();
+            return false;
+        }
+        file.close();
+        errMsg.clear();
+        return true;
     }
 }
